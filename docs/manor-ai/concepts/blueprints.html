@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.7.0">
 <title data-rh="true">Blueprints | Manor AI</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://manor-os.github.io/docs/manor-ai/img/social-card.png"><meta data-rh="true" name="twitter:image" content="https://manor-os.github.io/docs/manor-ai/img/social-card.png"><meta data-rh="true" property="og:url" content="https://manor-os.github.io/docs/manor-ai/concepts/blueprints"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" property="og:locale:alternate" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Blueprints | Manor AI"><meta data-rh="true" name="description" content="A blueprint is a portable, versioned snapshot of a workspace&#x27;s configuration"><meta data-rh="true" property="og:description" content="A blueprint is a portable, versioned snapshot of a workspace&#x27;s configuration"><link data-rh="true" rel="icon" href="/docs/manor-ai/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://manor-os.github.io/docs/manor-ai/concepts/blueprints"><link data-rh="true" rel="alternate" href="https://manor-os.github.io/docs/manor-ai/concepts/blueprints" hreflang="en"><link data-rh="true" rel="alternate" href="https://manor-os.github.io/docs/manor-ai/zh-Hans/concepts/blueprints" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://manor-os.github.io/docs/manor-ai/concepts/blueprints" hreflang="x-default"><link rel="stylesheet" href="/docs/manor-ai/assets/css/styles.bd1411cc.css">
-<script src="/docs/manor-ai/assets/js/runtime~main.b58749cb.js" defer="defer"></script>
+<script src="/docs/manor-ai/assets/js/runtime~main.fc68658a.js" defer="defer"></script>
 <script src="/docs/manor-ai/assets/js/main.bb977124.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -20,12 +20,20 @@ upgrade instead).</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="what-a-blueprint-contains">What a Blueprint Contains<a href="#what-a-blueprint-contains" class="hash-link" aria-label="Direct link to What a Blueprint Contains" title="Direct link to What a Blueprint Contains">​</a></h2>
 <table><thead><tr><th>Section</th><th>Contents</th></tr></thead><tbody><tr><td>Manifest</td><td>Slug, title, summary, tags, category, author, changelog</td></tr><tr><td>Contract</td><td>What the installing environment must supply: variables, channels, required tools/MCP servers</td></tr><tr><td>Embedded</td><td>Full skill and agent definitions (with tool bindings and starter memory), knowledge packs</td></tr><tr><td>Recipe</td><td>Operating model, subscriptions, scheduled jobs, workflows, goals, custom fields</td></tr><tr><td>Policy</td><td>Governance rules (never-allow / HITL-required / auto-approve, budget caps) and post-install checks</td></tr></tbody></table>
 <p>Exports are sanitized: IDs, credentials, and runtime state are stripped, and
-a recursive scan rejects any payload containing secret-shaped keys.</p>
+a recursive scan rejects any payload containing secret-shaped keys.
+Active workspace workflow bindings and workspace-scoped workflow graphs are
+included. Knowledge groups export as structure by default; operators can opt
+in to inline Markdown bodies, but only public, clean, non-PII Knowledge text is
+eligible. Browser-session requirements are limited to providers, labels, or
+session references found in the exported workspace configuration.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="exporting-and-installing">Exporting and Installing<a href="#exporting-and-installing" class="hash-link" aria-label="Direct link to Exporting and Installing" title="Direct link to Exporting and Installing">​</a></h2>
 <ul>
 <li><strong>Export</strong>: on a workspace page, <strong>Export as Blueprint</strong> creates a draft
 blueprint from the workspace&#x27;s current configuration
-(<code>POST /api/v1/workspaces/{id}/export-blueprint</code>).</li>
+(<code>POST /api/v1/workspaces/{id}/export-blueprint</code>).
+To re-freeze an editable draft from the same workspace, use the same slug
+with <strong>Replace an existing draft</strong> (<code>replace_existing: true</code>). Published or
+pending-review payloads cannot be replaced.</li>
 <li><strong>Install</strong>: <code>POST /api/v1/blueprints/{id}/install</code> creates a new
 workspace. Two modes: <code>simulate</code> (a sandboxed <code>[SIM]</code> workspace for a dry
 run — inspect the simulation report before going live) and <code>live</code>. Choose
@@ -38,7 +46,7 @@ preflight check confirms its required channels and sessions exist.</li>
 <li><strong>Share</strong>: an owner can mint a share token; the link installs the
 blueprint for any authenticated user without publishing it.</li>
 </ul>
-<p>Five built-in &quot;solo company&quot; blueprints ship with the platform as immutable
+<p>Built-in &quot;solo company&quot; blueprints ship with the platform as immutable
 starting points.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="versioning-and-upgrades">Versioning and Upgrades<a href="#versioning-and-upgrades" class="hash-link" aria-label="Direct link to Versioning and Upgrades" title="Direct link to Versioning and Upgrades">​</a></h2>
 <p>Two version numbers, deliberately separate:</p>

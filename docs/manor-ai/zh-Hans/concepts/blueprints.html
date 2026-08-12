@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.7.0">
 <title data-rh="true">蓝图 | Manor AI</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://manor-os.github.io/docs/manor-ai/zh-Hans/img/social-card.png"><meta data-rh="true" name="twitter:image" content="https://manor-os.github.io/docs/manor-ai/zh-Hans/img/social-card.png"><meta data-rh="true" property="og:url" content="https://manor-os.github.io/docs/manor-ai/zh-Hans/concepts/blueprints"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" property="og:locale:alternate" content="en"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="蓝图 | Manor AI"><meta data-rh="true" name="description" content="蓝图是工作区配置的一份可移植、带版本的快照"><meta data-rh="true" property="og:description" content="蓝图是工作区配置的一份可移植、带版本的快照"><link data-rh="true" rel="icon" href="/docs/manor-ai/zh-Hans/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://manor-os.github.io/docs/manor-ai/zh-Hans/concepts/blueprints"><link data-rh="true" rel="alternate" href="https://manor-os.github.io/docs/manor-ai/concepts/blueprints" hreflang="en"><link data-rh="true" rel="alternate" href="https://manor-os.github.io/docs/manor-ai/zh-Hans/concepts/blueprints" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://manor-os.github.io/docs/manor-ai/concepts/blueprints" hreflang="x-default"><link rel="stylesheet" href="/docs/manor-ai/zh-Hans/assets/css/styles.bd1411cc.css">
-<script src="/docs/manor-ai/zh-Hans/assets/js/runtime~main.ddd51d81.js" defer="defer"></script>
+<script src="/docs/manor-ai/zh-Hans/assets/js/runtime~main.bdff1833.js" defer="defer"></script>
 <script src="/docs/manor-ai/zh-Hans/assets/js/main.3f150b2a.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -19,12 +19,19 @@ Agent、技能、目标、工作流和知识分组；之后对蓝图的编辑
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="what-a-blueprint-contains">一个蓝图包含什么<a href="#what-a-blueprint-contains" class="hash-link" aria-label="一个蓝图包含什么的直接链接" title="一个蓝图包含什么的直接链接">​</a></h2>
 <table><thead><tr><th>部分</th><th>内容</th></tr></thead><tbody><tr><td>清单（Manifest）</td><td>Slug、标题、摘要、标签、分类、作者、变更日志</td></tr><tr><td>契约（Contract）</td><td>安装环境必须提供的内容：变量、渠道、所需工具/MCP 服务器</td></tr><tr><td>内嵌内容（Embedded）</td><td>完整的技能与 Agent 定义（含工具绑定和初始记忆）、知识包</td></tr><tr><td>配方（Recipe）</td><td>运营模型、订阅、定时任务、工作流、目标、自定义字段</td></tr><tr><td>策略（Policy）</td><td>治理规则（永不允许 / 需人工审批（HITL）/ 自动批准、预算上限）与安装后检查</td></tr></tbody></table>
 <p>导出内容经过脱敏：ID、凭证和运行时状态会被剔除，
-并有递归扫描拒绝任何包含疑似密钥键名的载荷。</p>
+并有递归扫描拒绝任何包含疑似密钥键名的载荷。
+导出会包含工作区中启用的工作流绑 定以及工作区范围的工作流图。
+知识分组默认只导出结构；操作者可选择内嵌 Markdown 正文，但只有
+标记为公开、扫描干净且不含 PII 的知识文本符合条件。浏览器会话
+需求只会来自被导出工作区配置实际引用的 provider、label 或会话引用。</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="exporting-and-installing">导出与安装<a href="#exporting-and-installing" class="hash-link" aria-label="导出与安装的直接链接" title="导出与安装的直接链接">​</a></h2>
 <ul>
 <li><strong>导出</strong>：在工作区页面上，<strong>Export as Blueprint（导出为蓝图）</strong>
 会基于工作区当前配置创建一个草稿蓝图
-（<code>POST /api/v1/workspaces/{id}/export-blueprint</code>）。</li>
+（<code>POST /api/v1/workspaces/{id}/export-blueprint</code>）。
+如需重新冻结同一工作区生成的可编辑草稿，可使用相同 slug 并选择
+<strong>Replace an existing draft</strong>（<code>replace_existing: true</code>）。已发布或
+待审核的载荷不能被替换。</li>
 <li><strong>安装</strong>：<code>POST /api/v1/blueprints/{id}/install</code> 创建一个新
 工作区。有两种模式：<code>simulate</code>（沙箱化的 <code>[SIM]</code> 工作区，用于
 试运行——上线前先检视模拟报告）和 <code>live</code>。安装时选择一个
@@ -37,7 +44,7 @@ Agent、技能、目标、工作流和知识分组；之后对蓝图的编辑
 <li><strong>分享</strong>：所有者可以签发一个分享令牌；通过该链接，任何已
 认证用户都可以安装此蓝图，而无需公开发布它。</li>
 </ul>
-<p>平台内置五个&quot;单人公司&quot;蓝图，作为不可变的
+<p>平台内置若干&quot;单人公司&quot;蓝图，作为不可变的
 起点随平台发布。</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="versioning-and-upgrades">版本与升级<a href="#versioning-and-upgrades" class="hash-link" aria-label="版本与升级的直接链接" title="版本与升级的直接链接">​</a></h2>
 <p>两个版本号，刻意分开：</p>
@@ -45,7 +52,7 @@ Agent、技能、目标、工作流和知识分组；之后对蓝图的编辑
 <li><strong>格式版本</strong>（<code>blueprint_version</code>，例如 <code>1.1</code>）——载荷的 schema 版本。
 旧格式在加载时自动迁移。</li>
 <li><strong>内容版本</strong>（semver，从 <code>1.0.0</code> 起）——仅当内容指纹确实
-发生变化时才在发布时递增。已安装的工作区会 与之比较，
+发生变化时才在发布时递增。已安装的工作区会与之比较，
 并显示&quot;有可用更新&quot;的徽标。</li>
 </ul>
 <p>升级采用&quot;先规划再应用&quot;的方式并带有还原点：安装后你从未
